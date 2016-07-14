@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mojik demo</title>
+<link rel="stylesheet" href="./mojik.css">
+<style>
+html {
+    font-family: -apple-system, BlinkMacSystemFont,
+        "Segoe UI", "Helvetica Neue",
+        "Hiragino Sans", "Meiryo", sans-serif;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    background-color: #eee;
+    margin: 1rem;
+}
+
+p {
+    background-color: #fff;
+    line-height: 1.75rem;
+}
+
+p,
+.section {
+    margin: 1.75rem 0;
+    position: relative;
+}
+
+p::before,
+.section::before {
+    color: rgba(0, 0, 0, 0.38);
+    content: "Before";
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    position: absolute;
+    bottom: 100%;
+}
+
+.mjk::before,
+.section-mjk::before {
+    content: "After";
+}
+
+.section p {
+    text-indent: 1em;
+    margin: 0;
+}
+
+.section p::before {
+    content: normal;
+}
+
+.section .mjk-leadOpeningBracket-atParagraphHead {
+    margin-left: -1em;
+}
+</style>
+</head>
+<body>
+
+<h1>Mojik demo</h1>
+
+<p>「行頭の開き括弧や、『（連続した）括弧』」「句読点」、｛中点・［コロンなど：（約物のアキをコントロール。）；］，｝．【こんなふうに】！</p>
+
+<p class="mjk">「行頭の開き括弧や、『（連続した）括弧』」「句読点」、｛中点・［コロンなど：（約物のアキをコントロール。）；］，｝．【こんなふうに】！</p>
+
+<p><b>Windows 10</b>（ウィンドウズ テン）は、マイクロソフトが開発およびリリースしている、<a href="#">Windows</a>シリーズに属する<a href="#">パーソナルコンピュータ</a>および8インチ以上のタブレット用のオペレーティングシステム（OS）である。コードネームは「<b>Threshold</b>（スレッショルド）」（ビルド10586まで）および「<b>Redstone</b>（レッドストーン）」（ビルド11082から）。2015年7月29日に一般への提供が開始され、同年8月1日にはボリュームライセンス契約で利用可能なEnterpriseとEducationおよびDSP (Delivery Service Partner) 版が、そして同年9月4日には新規インストールが可能なリテール版が発売された。</p>
+
+<p class="mjk"><b>Windows 10</b>（ウィンドウズ テン）は、マイクロソフトが開発およびリリースしている、<a href="#">Windows</a>シリーズに属する<a href="#">パーソナルコンピュータ</a>および8インチ以上のタブレット用のオペレーティングシステム（OS）である。コードネームは「<b>Threshold</b>（スレッショルド）」（ビルド10586まで）および「<b>Redstone</b>（レッドストーン）」（ビルド11082から）。2015年7月29日に一般への提供が開始され、同年8月1日にはボリュームライセンス契約で利用可能なEnterpriseとEducationおよびDSP (Delivery Service Partner) 版が、そして同年9月4日には新規インストールが可能なリテール版が発売された。</p>
+
+<div class="section">
+<p>「ではみなさんは、そういうふうに川だと云われたり、乳の流れたあとだと云われたりしていたこのぼんやりと白いものがほんとうは何かご承知ですか。」</p>
+<p>先生は、黒板に吊した大きな黒い星座の図の、上から下へ白くけぶった銀河帯のようなところを指しながら、みんなに問をかけました。</p>
+<p>カムパネルラが手をあげました。それから四五人手をあげました。ジョバンニも手をあげようとして、急いでそのままやめました。たしかにあれがみんな星だと、いつか雑誌で読んだのでしたが、このごろはジョバンニはまるで毎日教室でもねむく、本を読むひまも読む本もないので、なんだかどんなこともよくわからないという気持ちがするのでした。</p>
+<p>ところが先生は早くもそれを見附けたのでした。</p>
+<p>「ジョバンニさん。あなたはわかっているのでしょう。」</p>
+</div>
+
+<div class="section section-mjk">
+<p>「ではみなさんは、そういうふうに川だと云われたり、乳の流れたあとだと云われたりしていたこのぼんやりと白いものがほんとうは何かご承知ですか。」</p>
+<p>先生は、黒板に吊した大きな黒い星座の図の、上から下へ白くけぶった銀河帯のようなところを指しながら、みんなに問をかけました。</p>
+<p>カムパネルラが手をあげました。それから四五人手をあげました。ジョバンニも手をあげようとして、急いでそのままやめました。たしかにあれがみんな星だと、いつか雑誌で読んだのでしたが、このごろはジョバンニはまるで毎日教室でもねむく、本を読むひまも読む本もないので、なんだかどんなこともよくわからないという気持ちがするのでした。</p>
+<p>ところが先生は早くもそれを見附けたのでした。</p>
+<p>「ジョバンニさん。あなたはわかっているのでしょう。」</p>
+</div>
+
+<script src="./mojik.js"></script>
+<script>
+Mojik.compose('.mjk, .section-mjk p');
+</script>
+
+</body>
+</html>
