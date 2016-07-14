@@ -379,7 +379,8 @@
 
             // 行頭の欧文を検出
             function detectWesternAtLineHead () {
-                var staticParent = el.style.position === "static";
+                var staticParent = window.getComputedStyle(el).position === "static";
+                var parentPaddingLeft = parseFloat(window.getComputedStyle(el).paddingLeft);
 
                 // 検出結果をリセット
                 Array.prototype.forEach.call(westernList, function (western) {
@@ -393,6 +394,7 @@
                 }
 
                 Array.prototype.forEach.call(westernList, function (western) {
+                    var marginLeft = parseFloat(window.getComputedStyle(western).marginLeft);
 
                     // 直前の要素がbrかどうか
                     if (isLineBreak(western.previousSibling)) {
@@ -401,7 +403,7 @@
                     }
 
                     // 要素内の相対位置を検出
-                    else if (western.offsetLeft - parseFloat(window.getComputedStyle(western).marginLeft) < 1) {
+                    else if (western.offsetLeft - marginLeft - parentPaddingLeft < 1) {
                         western.classList.add(htmlClass.western_atLineHead);
                     }
                 });
@@ -414,13 +416,19 @@
 
             // 行頭の始め括弧を検出
             function detectOpeningBracketAtLineHead () {
-                var parentLeft = el.getBoundingClientRect().left;
+                var staticParent = window.getComputedStyle(el).position === "static";
+                var parentPaddingLeft = parseFloat(window.getComputedStyle(el).paddingLeft);
 
                 // 検出結果をリセット
                 Array.prototype.forEach.call(openingBracketList, function (bracket) {
                     bracket.classList.remove(htmlClass.leadOpeningBracket_atLineHead);
                     bracket.previousSibling.classList.remove(htmlClass.leadOpeningBracketBefore_atLineEnd);
                 });
+
+                // 始め括弧の相対位置を検出するため親要素のpositionプロパティを一時的に変更
+                if (staticParent) {
+                    el.style.position = "relative";
+                }
 
                 Array.prototype.forEach.call(openingBracketList, function (bracket) {
                     var bracketBefore = bracket.previousSibling;
@@ -431,11 +439,16 @@
                     }
 
                     // 要素内の相対位置を検出
-                    else if (bracket.getBoundingClientRect().left === parentLeft) {
+                    else if (bracket.offsetLeft - parentPaddingLeft < 1) {
                         bracket.classList.add(htmlClass.leadOpeningBracket_atLineHead);
                         bracketBefore.classList.add(htmlClass.leadOpeningBracketBefore_atLineEnd);
                     }
                 });
+
+                // 親要素のpositionプロパティを元に戻す
+                if (staticParent) {
+                    el.style.position = "";
+                }
             }
 
             function isLineBreak (node) {
