@@ -157,7 +157,6 @@
             // 要素内の文字列をテキストとタグのスライス（文字列片）に分割
             var slices = el.innerHTML.match(reTagDivider);
 
-            var tagSlices = [];
             var nonTagSlices = [];
             var node;
             var openingBracketList;
@@ -193,9 +192,8 @@
                     continue;
                 }
 
-                // そのほかの開始タグと終了タグを無視
-                if (reTag.test(slices[i])) {
-                    tagSlices.push(slices[i]);
+                // そのほかの開始タグと終了タグ、または空白のみのテキストを無視
+                if (reTag.test(slices[i]) || /^\s+$/.test(slices[i])) {
                     continue;
                 }
 
@@ -205,19 +203,11 @@
                 // 欧文を検出
                 slices[i] = slices[i].replace(reObun, function (match, offset) {
 
-                    // 空白文字のみなら処理しない
-                    if (/^\s+$/.test(match)) {
-                        return match;
-                    }
-
                     // 数字
                     var isNumber = /^\d([\d.,/]*\d)?$/.test(match);
 
                     // 要素の先頭
-                    var isAtParagraphHead =
-                            i === 0 &&
-                            window.getComputedStyle(el).display !== "inline" &&
-                            /^\s*$/.test(slices[i].substring(0, offset));
+                    var isAtParagraphHead = offset === 0 && (i === 0 || nonTagSlices.length === 1);
 
                     var k;
 
@@ -233,10 +223,10 @@
                             // スライス中の2文字目以降で和文約物に後続
                             (offset > 0 && reYakumonoAhead.test(slices[i].substring(0, offset))) ||
 
-                            // スライスの先頭で、スライスが要素の先頭か、先行する直近のテキストスライスが和文約物か欧文で終わる
-                            (offset === 0 && (
-                                i === 0 ||
-                                reYakumonoAhead.test(nonTagSlices[nonTagSlices.length - 2]) || reObunAhead.test(nonTagSlices[nonTagSlices.length - 2])
+                            // スライスの先頭で、先行する直近のテキストスライスが和文約物か欧文で終わる
+                            (offset === 0 && nonTagSlices.length > 1 && (
+                                reYakumonoAhead.test(nonTagSlices[nonTagSlices.length - 2]) ||
+                                reObunAhead.test(nonTagSlices[nonTagSlices.length - 2])
                             ));
 
                     // 右スペースを除去 1
@@ -307,15 +297,10 @@
                     }
 
                     // 要素の先頭
-                    else if (
-                        i === 0 &&
-                        window.getComputedStyle(el).display !== "inline" &&
-                        /^\s*$/.test(slices[i].substring(0, offset))
-                    ) {
+                    else if (offset === 0 && (i === 0 || nonTagSlices.length === 1)) {
                         return "<span class=\"" + htmlClass.leadOpeningBracket +
                                 " " + htmlClass.leadOpeningBracket_atParagraphHead +
                                 "\">" + match + "</span>";
-
                     }
 
                     // 独立した、または連続した始め括弧の先頭
@@ -369,6 +354,7 @@
             openingBracketList = el.querySelectorAll("." + htmlClass.leadOpeningBracket +
                     ":not(." + htmlClass.leadOpeningBracket_atParagraphHead + ")");
             westernList = el.querySelectorAll("." + htmlClass.western +
+                    ":not(." + htmlClass.western_atParagraphHead + ")" +
                     ":not(." + htmlClass.western_noSpace + ")" +
                     ":not(." + htmlClass.western_noSpaceBefore + ")");
             detectOpeningBracketAtLineHead();

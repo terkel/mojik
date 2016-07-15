@@ -7,8 +7,8 @@
     margin-right: -0.5em;
 }
 
-.mjk-leadOpeningBracket-atLineHead,
-.mjk-leadOpeningBracket-atParagraphHead {
+.mjk-leadOpeningBracket-atParagraphHead,
+.mjk-leadOpeningBracket-atLineHead {
     margin-left: -0.5em;
 }
 
@@ -40,6 +40,7 @@
     margin-right: 0;
 }
 
+.mjk-western-atParagraphHead,
 .mjk-western-atLineHead {
     margin-left: 0;
 }
@@ -49,7 +50,6 @@
     white-space: pre;
 }
 
-.mjk-western-atParagraphHead::before,
 .mjk-western-afterLineBreak::before {
     content: normal;
 }
