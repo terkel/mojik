@@ -106,21 +106,21 @@
         var reTagStr = "<\\/?[^>]+?\\/?>";
         var reTag = new RegExp(reTagStr);
         var reTagDivider = new RegExp(reTagStr + "|[^<>]+", "gi");
-        var reObun = new RegExp("[" + Mojik.characters.western + "]+", "g");
-        var reObunAhead = new RegExp("[" + Mojik.characters.western + "]+$");
-        var reObunBehind = new RegExp("^[" + Mojik.characters.western + "]+");
         var reIgnoreTag = new RegExp("^<(" + Mojik.ignoreTag + ")[ >]", "i");
-        var reYakumonoStr =
+        var reWestern = new RegExp("[" + Mojik.characters.western + "]+", "g");
+        var reWesternAhead = new RegExp("[" + Mojik.characters.western + "]+$");
+        var reWesternBehind = new RegExp("^[" + Mojik.characters.western + "]+");
+        var reJaPuncStr =
                 Mojik.characters.japaneseOpeningBrackets +
                 Mojik.characters.japaneseClosingBrackets +
                 Mojik.characters.japaneseMiddleDots +
                 Mojik.characters.japaneseFullStops +
                 Mojik.characters.japaneseCommas +
                 Mojik.characters.japaneseFullWidthSpace;
-        var reYakumonoAhead = new RegExp("[" + reYakumonoStr + "]$");
-        var reYakumonoBehind = new RegExp("^[" + reYakumonoStr + "]");
-        var reOpenKakko = new RegExp("[" + Mojik.characters.japaneseOpeningBrackets + "]", "g");
-        var puncPairs = [
+        var reJaPuncAhead = new RegExp("[" + reJaPuncStr + "]$");
+        var reJaPuncBehind = new RegExp("^[" + reJaPuncStr + "]");
+        var reJaOpeningBracket = new RegExp("[" + Mojik.characters.japaneseOpeningBrackets + "]", "g");
+        var jaPuncPairs = [
             [Mojik.characters.japaneseClosingBrackets,
                 Mojik.characters.japaneseOpeningBrackets +
                 Mojik.characters.japaneseClosingBrackets +
@@ -157,8 +157,7 @@
             // 要素内の文字列をテキストとタグのスライス（文字列片）に分割
             var slices = el.innerHTML.match(reTagDivider);
 
-            var nonTagSlices = [];
-            var node;
+            var textSlices = [];
             var openingBracketList;
             var westernList;
             var ignoreTagMatch;
@@ -198,16 +197,16 @@
                 }
 
                 // テキストスライスを保存
-                nonTagSlices.push(slices[i]);
+                textSlices.push(slices[i]);
 
                 // 欧文を検出
-                slices[i] = slices[i].replace(reObun, function (match, offset) {
+                slices[i] = slices[i].replace(reWestern, function (match, offset) {
 
                     // 数字
                     var isNumber = /^\d([\d.,/]*\d)?$/.test(match);
 
                     // 要素の先頭
-                    var isAtParagraphHead = offset === 0 && (i === 0 || nonTagSlices.length === 1);
+                    var isAtParagraphHead = offset === 0 && (i === 0 || textSlices.length === 1);
 
                     var k;
 
@@ -221,12 +220,12 @@
                             /^\s/.test(match) ||
 
                             // スライス中の2文字目以降で和文約物に後続
-                            (offset > 0 && reYakumonoAhead.test(slices[i].substring(0, offset))) ||
+                            (offset > 0 && reJaPuncAhead.test(slices[i].substring(0, offset))) ||
 
                             // スライスの先頭で、先行する直近のテキストスライスが和文約物か欧文で終わる
-                            (offset === 0 && nonTagSlices.length > 1 && (
-                                reYakumonoAhead.test(nonTagSlices[nonTagSlices.length - 2]) ||
-                                reObunAhead.test(nonTagSlices[nonTagSlices.length - 2])
+                            (offset === 0 && textSlices.length > 1 && (
+                                reJaPuncAhead.test(textSlices[textSlices.length - 2]) ||
+                                reWesternAhead.test(textSlices[textSlices.length - 2])
                             ));
 
                     // 右スペースを除去 1
@@ -236,7 +235,7 @@
                             /\s$/.test(match) ||
 
                             // 後続する直近のテキストスライスが和文約物で始まる
-                            reYakumonoBehind.test(slices[i].substring(offset + match.length));
+                            reJaPuncBehind.test(slices[i].substring(offset + match.length));
 
                     // 右スペースを除去 2
                     if (!hasNoSpaceAfter && slices[i].length === offset + match.length) {
@@ -260,7 +259,7 @@
                                 } else {
 
                                     // タグをまたいで後続する直近のテキストスライスが和文約物か欧文で始まる
-                                    if (reYakumonoBehind.test(slices[k]) || reObunBehind.test(slices[k])) {
+                                    if (reJaPuncBehind.test(slices[k]) || reWesternBehind.test(slices[k])) {
                                         hasNoSpaceAfter = true;
                                     }
 
@@ -280,12 +279,12 @@
                 });
 
                 // 和文始め括弧を検出
-                tmp = slices[i].replace(reOpenKakko, function (match, offset) {
+                tmp = slices[i].replace(reJaOpeningBracket, function (match, offset) {
                     var isAtParagraphHead;
                     var isLead;
                     var hasSucceeding;
                     var matchBefore =
-                            offset === 0? (new RegExp("[" + Mojik.characters.japaneseOpeningBrackets + "]$")).exec(nonTagSlices[nonTagSlices.length - 2]):
+                            offset === 0? (new RegExp("[" + Mojik.characters.japaneseOpeningBrackets + "]$")).exec(textSlices[textSlices.length - 2]):
                             offset > 0? (new RegExp("[" + Mojik.characters.japaneseOpeningBrackets + "]")).exec(slices[i].charAt(offset - 1)):
                             null;
 
@@ -297,7 +296,7 @@
                     }
 
                     // 要素の先頭
-                    else if (offset === 0 && (i === 0 || nonTagSlices.length === 1)) {
+                    else if (offset === 0 && (i === 0 || textSlices.length === 1)) {
                         return "<span class=\"" + htmlClass.leadOpeningBracket +
                                 " " + htmlClass.leadOpeningBracket_atParagraphHead +
                                 "\">" + match + "</span>";
@@ -313,7 +312,7 @@
                 slices[i] = tmp;
 
                 // 連続する和文約物を検出
-                puncPairs.forEach(function (pair) {
+                jaPuncPairs.forEach(function (pair) {
                     var reAhead = new RegExp("[" + pair[0] + "]", "g");
                     var reBehind = new RegExp("^(?:" + reTagStr + ")*([" + pair[1] + "])");
 
