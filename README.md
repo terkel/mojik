@@ -1,9 +1,9 @@
 # Mojik
 
-<b>Mojik</b>は、ウェブにおける和文の文字組みの「アキ」をコントロールするためのJavaScriptライブラリです。指定した要素のテキストを探索して、以下のパターンでのアキのコントロールを可能にします。
+<b>Mojik</b>は、ウェブにおける和文の文字組みをコントロールするためのJavaScriptライブラリです。現在のところ、以下のパターンでの「アキ」の調整ができます。
 
-- 連続する約物（括弧や句読点など）の間のアキ
-- 行頭の始め括弧の前のアキ
+- 連続する約物のアキ
+- 行頭の始め括弧のアキ
 - 和欧間のアキ
 
 ## 使い方
@@ -18,13 +18,13 @@
     <link rel="stylesheet" href="path/to/mojik.css">
     <script src="path/to/mojik.js"></script>
 
-`Mojik.compose()`メソッドを呼び出します。引数には文字組を適用したい要素のCSSセレクターを渡します。
+`Mojik.compose()`メソッドを呼び出します。引数には、文字組みを適用したい段落や見出しなどのCSSセレクターを渡します。
 
     <script>
     Mojik.compose(".ArticleBody p");
     </script>
 
-各アキ量は`mojik.css`で調整します。
+各アキ量はCSSで調整します。
 
 ```
 .mjk-western-number {

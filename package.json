@@ -1,7 +1,7 @@
 {
   "name": "mojik",
   "version": "0.1.2",
-  "description": "Typesetting for Japanese web typography",
+  "description": "Take control of Japanese typesetting on the web",
   "main": "mojik.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
