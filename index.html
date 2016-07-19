@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Mojikは、ウェブにおける和文の文字組みをコントロールするためのJavaScriptライブラリです">
+<title>Mojik</title>
+<link rel="stylesheet" href="./mojik.css">
+<style>
+html {
+    font-family: -apple-system, BlinkMacSystemFont,
+        "Segoe UI", "Helvetica Neue",
+        "Hiragino Sans", "Meiryo", sans-serif;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0 auto;
+    max-width: 40rem;
+    width: calc(100vw - 2rem);
+}
+
+h1 {
+    background-color: rgba(0,0,0,0.05);
+    background-color: black;
+    color: white;
+    box-sizing: border-box;
+    display: inline-block;
+    font-size: 2rem;
+    letter-spacing: 0.125em;
+    line-height: 2.75rem;
+    margin-top: 3.5rem;
+    margin-bottom: 3.5rem;
+    padding-left: 0.25em;
+    padding-right: 0.125em;
+    text-align: right;
+}
+
+h2 {
+    font-size: 1rem;
+    line-height: 1.75rem;
+    margin-bottom: 3.5rem;
+    margin-top: 3.5rem;
+}
+
+p, ul {
+    line-height: 1.75rem;
+    margin-bottom: 1.75rem;
+    margin-top: 1.75rem;
+}
+
+ul {
+    padding-left: 2rem;
+}
+
+ul li {
+    list-style-type: none;
+    position: relative;
+}
+
+ul li::before {
+    content: "-";
+    font-family: Menlo, monospace;
+    font-size: 1em;
+    font-weight: bold;
+    right: 100%;
+    position: absolute;
+    margin-right: 1ch;
+}
+
+.demoGroup {
+    margin-top: 3.5rem;
+}
+
+.demo,
+.demoSection {
+    background-color: rgba(0,0,0,0.05);
+    position: relative;
+}
+
+.demo::before,
+.demoSection::before {
+    color: rgba(0, 0, 0, 0.38);
+    content: "Before";
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    position: absolute;
+    bottom: 100%;
+}
+
+.demo-mjk::before,
+.demoSection-mjk::before {
+    content: "After";
+}
+
+.demoSection {
+    margin-bottom: 1.75rem;
+    margin-top: 1.75rem;
+}
+
+.demoSection p {
+    text-indent: 1em;
+    margin: 0;
+}
+
+.demoSection .mjk-leadOpeningBracket-atParagraphHead {
+    margin-left: -1em;
+}
+
+.downloadLink {
+    border-radius: 0.25em;
+    display: inline-block;
+    background-color: black;
+    color: white;
+    font-weight: bold;
+    line-height: 2rem;
+    padding: 0.5rem 1rem 0.5em 3rem;
+    text-decoration: none;
+    position: relative;
+}
+
+.downloadLink .icon {
+    position: absolute;
+    left: 0.5rem;
+    width: 2rem;
+    height: 2rem;
+    top: 0.5rem;
+}
+
+footer {
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    margin-bottom: 3.5rem;
+    margin-top: 5.25rem;
+}
+
+footer a {
+    color: inherit;
+}
+</style>
+</head>
+<body>
+
+<h1>Mojik</h1>
+
+<p class="lede"><b>Mojik</b>は、ウェブにおける和文の文字組みをコントロールするためのJavaScriptライブラリです。現在のところ、以下のパターンでの「アキ」の調整ができます。</p>
+
+<ul class="features">
+    <li>連続する約物のアキ</li>
+    <li>行頭の始め括弧のアキ</li>
+    <li>和欧間のアキ</li>
+</ul>
+
+<section id="demo">
+
+    <h2>デモ</h2>
+
+    <div class="demoGroup">
+        <p class="demo">「行頭の開き括弧や、『（連続した）括弧』」「句読点」、｛中点・［コロンなど：（約物のアキをコントロール。）；］，｝．【こんなふうに】！</p>
+        <p class="demo demo-mjk">「行頭の開き括弧や、『（連続した）括弧』」「句読点」、｛中点・［コロンなど：（約物のアキをコントロール。）；］，｝．【こんなふうに】！</p>
+    </div>
+
+    <div class="demoGroup">
+        <p class="demo"><b>Windows 10</b>（ウィンドウズ テン）は、マイクロソフトが開発およびリリースしている、<a href="#">Windows</a>シリーズに属するパーソナルコンピュータおよび8インチ以上のタブレット用のオペレーティングシステム（OS）である。コードネームは「<b>Threshold</b>（スレッショルド）」（ビルド10586まで）および「<b>Redstone</b>（レッドストーン）」（ビルド11082から）。2015年7月29日に一般への提供が開始され、同年8月1日にはボリュームライセンス契約で利用可能なEnterpriseとEducationおよび<a href="#">DSP</a> (Delivery Service Partner) 版が、そして同年9月4日には新規インストールが可能なリテール版が発売された。</p>
+        <p class="demo demo-mjk"><b>Windows 10</b>（ウィンドウズ テン）は、マイクロソフトが開発およびリリースしている、<a href="#">Windows</a>シリーズに属するパーソナルコンピュータおよび8インチ以上のタブレット用のオペレーティングシステム（OS）である。コードネームは「<b>Threshold</b>（スレッショルド）」（ビルド10586まで）および「<b>Redstone</b>（レッドストーン）」（ビルド11082から）。2015年7月29日に一般への提供が開始され、同年8月1日にはボリュームライセンス契約で利用可能なEnterpriseとEducationおよび<a href="#">DSP</a> (Delivery Service Partner) 版が、そして同年9月4日には新規インストールが可能なリテール版が発売された。</p>
+    </div>
+
+    <div class="demoGroup">
+        <div class="demoSection">
+            <p>「ではみなさんは、そういうふうに川だと云われたり、乳の流れたあとだと云われたりしていたこのぼんやりと白いものがほんとうは何かご承知ですか。」</p>
+            <p>先生は、黒板に吊した大きな黒い星座の図の、上から下へ白くけぶった銀河帯のようなところを指しながら、みんなに問をかけました。</p>
+            <p>カムパネルラが手をあげました。それから四五人手をあげました。ジョバンニも手をあげようとして、急いでそのままやめました。たしかにあれがみんな星だと、いつか雑誌で読んだのでしたが、このごろはジョバンニはまるで毎日教室でもねむく、本を読むひまも読む本もないので、なんだかどんなこともよくわからないという気持ちがするのでした。</p>
+            <p>ところが先生は早くもそれを見附けたのでした。</p>
+            <p>「ジョバンニさん。あなたはわかっているのでしょう。」</p>
+        </div>
+        <div class="demoSection section-mjk">
+            <p>「ではみなさんは、そういうふうに川だと云われたり、乳の流れたあとだと云われたりしていたこのぼんやりと白いものがほんとうは何かご承知ですか。」</p>
+            <p>先生は、黒板に吊した大きな黒い星座の図の、上から下へ白くけぶった銀河帯のようなところを指しながら、みんなに問をかけました。</p>
+            <p>カムパネルラが手をあげました。それから四五人手をあげました。ジョバンニも手をあげようとして、急いでそのままやめました。たしかにあれがみんな星だと、いつか雑誌で読んだのでしたが、このごろはジョバンニはまるで毎日教室でもねむく、本を読むひまも読む本もないので、なんだかどんなこともよくわからないという気持ちがするのでした。</p>
+            <p>ところが先生は早くもそれを見附けたのでした。</p>
+            <p>「ジョバンニさん。あなたはわかっているのでしょう。」</p>
+        </div>
+    </div>
+
+</section>
+
+<section id="sourcecode">
+
+    <h2>ソースコード</h2>
+
+    <p>
+        <a class="downloadLink" href="https://github.com/terkel/mojik">
+            <img class="icon" alt="" src="./GitHub-Mark-Light-64px.png">
+            Mojik on GitHub
+        </a>
+    </p>
+
+</section>
+
+<footer>
+    <a href="https://ja.wikipedia.org/wiki/Microsoft_Windows_10">Microsoft Windows 10</a>, Wikipedia, 2016-07-19T04:21Z<br>
+    <a href="http://www.aozora.gr.jp/cards/000081/files/456_15050.html">銀河鉄道の夜</a>, 青空文庫, 2010-11-01<br>
+    © 2016 <a href="http://terkel.jp/">Takeru Suzuki</a>
+</footer>
+
+<script src="./mojik.js"></script>
+<script>
+Mojik.compose('.lede, .demo-mjk, .section-mjk p');
+</script>
+
+</body>
+</html>
