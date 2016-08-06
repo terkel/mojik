@@ -103,9 +103,10 @@
 
     Mojik.compose = function (selector/*, options*/) {
         var elements = document.querySelectorAll(selector);
+        var reCommentStr = "<!--[\\s\\S]*?-->";
         var reTagStr = "<\\/?[^>]+?\\/?>";
         var reTag = new RegExp(reTagStr);
-        var reTagDivider = new RegExp(reTagStr + "|[^<>]+", "gi");
+        var reTagDivider = new RegExp(reCommentStr + "|" + reTagStr + "|[^<>]+", "gi");
         var reIgnoreTag = new RegExp("^<(" + Mojik.ignoreTag + ")[ >]", "i");
         var reWestern = new RegExp("[" + Mojik.characters.western + "]+", "g");
         var reWesternAhead = new RegExp("[" + Mojik.characters.western + "]+$");
@@ -191,8 +192,8 @@
                     continue;
                 }
 
-                // そのほかの開始タグと終了タグ、または空白のみのテキストを無視
-                if (reTag.test(slices[i]) || /^\s+$/.test(slices[i])) {
+                // そのほかのタグ、コメント、または空白のみのテキストを無視
+                if ((new RegExp(reCommentStr + "|" + reTagStr + "|^\\s+$")).test(slices[i])) {
                     continue;
                 }
 
