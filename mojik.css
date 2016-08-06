@@ -27,21 +27,14 @@
     margin-right: 0.125ch;
 }
 
-.mjk-western-noSpace{
-    margin-left: 0;
-    margin-right: 0;
-}
-
-.mjk-western-noSpaceBefore {
-    margin-left: 0;
-}
-
+.mjk-western-atParagraphEnd,
 .mjk-western-noSpaceAfter {
     margin-right: 0;
 }
 
 .mjk-western-atParagraphHead,
-.mjk-western-atLineHead {
+.mjk-western-atLineHead,
+.mjk-western-noSpaceBefore {
     margin-left: 0;
 }
 

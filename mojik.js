@@ -26,11 +26,11 @@
         leadOpeningBracketBefore_atLineEnd: "leadOpeningBracketBefore-atLineEnd",
         western: "western",
         western_number: "western-number",
-        western_noSpace: "western-noSpace",
         western_noSpaceBefore: "western-noSpaceBefore",
         western_noSpaceAfter: "western-noSpaceAfter",
         western_atLineHead: "western-atLineHead",
         western_atParagraphHead: "western-atParagraphHead",
+        western_atParagraphEnd: "western-atParagraphEnd",
         western_afterLineBreak: "western-afterLineBreak"
     };
 
@@ -201,81 +201,96 @@
 
                 // 欧文を検出
                 slices[i] = slices[i].replace(reWestern, function (match, offset) {
-
-                    // 数字
                     var isNumber = /^\d([\d.,/]*\d)?$/.test(match);
-
-                    // 要素の先頭
-                    var isAtParagraphHead = offset === 0 && (i === 0 || textSlices.length === 1);
-
+                    var isAtParagraphHead = offset === 0 && textSlices.length === 1;
+                    var leadingWhitespace = "";
+                    var trailingWhitespace = "";
+                    var matchLeadingWhitespace = /^(\s+)(\S*)/.exec(match);
+                    var matchTrailingWhitespace = /(\S*)(\s+)$/.exec(match);
+                    var isAtParagraphEnd;
+                    var hasNoSpaceBefore;
+                    var hasNoSpaceAfter;
                     var k;
 
-                    // [TODO] 左右スペースを除去
-                    var hasNoSpace;
+                    // 要素の先頭
+                    if (isAtParagraphHead) {
+                        if (matchLeadingWhitespace) {
+                            if (matchLeadingWhitespace[2]) {
+                                // 先頭の空白文字はマークアップに含めない
+                                leadingWhitespace = matchLeadingWhitespace[1];
+                                match = match.slice(leadingWhitespace.length);
+                            } else {
+                                // 空白文字のみの場合はなにもしない
+                                return match;
+                            }
+                        }
+                    } else if (
+                        // 空白で始まる
+                        /^\s/.test(match) ||
+                        // スライス中の2文字目以降で和文約物に後続
+                        (offset > 0 && reJaPuncAhead.test(slices[i].substring(0, offset))) ||
+                        // スライスの先頭で、先行する直近のテキストスライスが和文約物か欧文で終わる
+                        (offset === 0 && textSlices.length > 1 && (
+                            reJaPuncAhead.test(textSlices[textSlices.length - 2]) ||
+                            reWesternAhead.test(textSlices[textSlices.length - 2])
+                        ))
+                    ) {
+                        hasNoSpaceBefore = true;
+                    }
 
-                    // 左スペースを除去
-                    var hasNoSpaceBefore =
-
-                            // 空白で始まる
-                            /^\s/.test(match) ||
-
-                            // スライス中の2文字目以降で和文約物に後続
-                            (offset > 0 && reJaPuncAhead.test(slices[i].substring(0, offset))) ||
-
-                            // スライスの先頭で、先行する直近のテキストスライスが和文約物か欧文で終わる
-                            (offset === 0 && textSlices.length > 1 && (
-                                reJaPuncAhead.test(textSlices[textSlices.length - 2]) ||
-                                reWesternAhead.test(textSlices[textSlices.length - 2])
-                            ));
-
-                    // 右スペースを除去 1
-                    var hasNoSpaceAfter =
-
-                            // 空白で終わる
-                            /\s$/.test(match) ||
-
-                            // 後続する直近のテキストスライスが和文約物で始まる
-                            reJaPuncBehind.test(slices[i].substring(offset + match.length));
-
-                    // 右スペースを除去 2
-                    if (!hasNoSpaceAfter && slices[i].length === offset + match.length) {
-
+                    // 後続するスライスの検査
+                    if (slices[i].length === offset + match.length) {
                         // 要素の最後
                         if (i === slices.length - 1) {
-                            hasNoSpaceAfter = true;
-                        }
-
-                        else {
+                            isAtParagraphEnd = true;
+                        } else {
                             for (k = i + 1; k < slices.length; k++) {
-                                if (reTag.test(slices[k])) {
-
+                                if (reTag.test(slices[k]) || /^\s+$/.test(slices[k])) {
                                     // テキストスライスが後続しない
                                     if (k === slices.length - 1) {
-                                        hasNoSpaceAfter = true;
+                                        isAtParagraphEnd = true;
                                     } else {
                                         continue;
                                     }
-
                                 } else {
-
                                     // タグをまたいで後続する直近のテキストスライスが和文約物か欧文で始まる
                                     if (reJaPuncBehind.test(slices[k]) || reWesternBehind.test(slices[k])) {
                                         hasNoSpaceAfter = true;
                                     }
-
                                     break;
                                 }
                             }
                         }
                     }
 
-                    return "<span class=\"" + htmlClass.western +
+                    // 要素の末尾
+                    if (isAtParagraphEnd) {
+                        if (matchTrailingWhitespace) {
+                            if (matchTrailingWhitespace[1]) {
+                                // 末尾の空白文字はマークアップに含めない
+                                trailingWhitespace = matchTrailingWhitespace[2];
+                                match = match.slice(0, - trailingWhitespace.length);
+                            } else {
+                                // 空白文字のみの場合はなにもしない
+                                return match;
+                            }
+                        }
+                    } else if (!hasNoSpaceAfter && (
+                        // 空白で終わる
+                        /\s$/.test(match) ||
+                        // 後続する直近のテキストスライスが和文約物で始まる
+                        reJaPuncBehind.test(slices[i].substring(offset + match.length))
+                    )) {
+                        hasNoSpaceAfter = true;
+                    }
+
+                    return leadingWhitespace + "<span class=\"" + htmlClass.western +
                             (isNumber? " " + htmlClass.western_number: "") +
-                            (hasNoSpace? " " + htmlClass.western_noSpace: "") +
+                            (isAtParagraphHead? " " + htmlClass.western_atParagraphHead: "") +
+                            (isAtParagraphEnd? " " + htmlClass.western_atParagraphEnd: "") +
                             (hasNoSpaceBefore? " " + htmlClass.western_noSpaceBefore: "") +
                             (hasNoSpaceAfter? " " + htmlClass.western_noSpaceAfter: "") +
-                            (isAtParagraphHead? " " + htmlClass.western_atParagraphHead: "") +
-                            "\">" + match + "</span>";
+                            "\">" + match + "</span>" + trailingWhitespace;
                 });
 
                 // 和文始め括弧を検出
@@ -296,7 +311,9 @@
                     }
 
                     // 要素の先頭
-                    else if (offset === 0 && (i === 0 || textSlices.length === 1)) {
+                    else if (textSlices.length === 1 &&
+                        (offset === 0 || /^\s+$/.test(slices[i].slice(0, offset)))
+                    ) {
                         return "<span class=\"" + htmlClass.leadOpeningBracket +
                                 " " + htmlClass.leadOpeningBracket_atParagraphHead +
                                 "\">" + match + "</span>";
