@@ -230,7 +230,7 @@
                         // 空白で始まる
                         /^\s/.test(match) ||
                         // スライス中の2文字目以降で和文約物に後続
-                        (offset > 0 && reJaPuncAhead.test(slices[i].substring(0, offset))) ||
+                        (offset > 0 && reJaPuncAhead.test(slices[i].slice(0, offset))) ||
                         // スライスの先頭で、先行する直近のテキストスライスが和文約物か欧文で終わる
                         (offset === 0 && textSlices.length > 1 && (
                             reJaPuncAhead.test(textSlices[textSlices.length - 2]) ||
@@ -280,8 +280,8 @@
                     } else if (!hasNoSpaceAfter && (
                         // 空白で終わる
                         /\s$/.test(match) ||
-                        // 後続する直近のテキストスライスが和文約物で始まる
-                        reJaPuncBehind.test(slices[i].substring(matchEndPosition))
+                        // 和文約物が直接後続する
+                        reJaPuncBehind.test(slices[i].slice(matchEndPosition))
                     )) {
                         hasNoSpaceAfter = true;
                     }
@@ -355,7 +355,7 @@
                                 }
                             }
                         } else {
-                            matchBehind = reBehind.exec(slices[i].substring(offset + 1));
+                            matchBehind = reBehind.exec(slices[i].slice(offset + 1));
                             if (matchBehind) {
                                 ret += "<span class=\"" + htmlClass.punctuationSpacer +
                                         "\" data-mjk-punc-pair=\"" + match + matchBehind[1] +
