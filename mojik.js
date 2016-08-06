@@ -201,6 +201,7 @@
 
                 // 欧文を検出
                 slices[i] = slices[i].replace(reWestern, function (match, offset) {
+                    var matchEndPosition = offset + match.length;
                     var isNumber = /^\d([\d.,/]*\d)?$/.test(match);
                     var isAtParagraphHead = offset === 0 && textSlices.length === 1;
                     var leadingWhitespace = "";
@@ -239,7 +240,7 @@
                     }
 
                     // 後続するスライスの検査
-                    if (slices[i].length === offset + match.length) {
+                    if (slices[i].length === matchEndPosition) {
                         // 要素の最後
                         if (i === slices.length - 1) {
                             isAtParagraphEnd = true;
@@ -279,7 +280,7 @@
                         // 空白で終わる
                         /\s$/.test(match) ||
                         // 後続する直近のテキストスライスが和文約物で始まる
-                        reJaPuncBehind.test(slices[i].substring(offset + match.length))
+                        reJaPuncBehind.test(slices[i].substring(matchEndPosition))
                     )) {
                         hasNoSpaceAfter = true;
                     }
