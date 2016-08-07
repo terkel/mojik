@@ -338,7 +338,7 @@
 
                     slices[i] = slices[i].replace(reAhead, function (match, offset) {
                         var ret = match;
-                        var matchBehind = null;
+                        var textBehind = "";
                         var l;
 
                         if (offset + match.length === slices[i].length) {
@@ -346,19 +346,18 @@
                                 if (reTag.test(slices[l])) {
                                     continue;
                                 } else {
-                                    matchBehind = reBehind.exec(slices[l]);
-                                    if (matchBehind) {
-                                        ret += "<span class=\"" + htmlClass.punctuationSpacer + "\"></span>";
-                                    }
+                                    textBehind = slices[l];
                                     break;
                                 }
                             }
                         } else {
-                            matchBehind = reBehind.exec(slices[i].slice(offset + 1));
-                            if (matchBehind) {
-                                ret += "<span class=\"" + htmlClass.punctuationSpacer + "\"></span>";
-                            }
+                            textBehind = slices[i].slice(offset + 1);
                         }
+
+                        if (textBehind && reBehind.test(textBehind)) {
+                            ret += "<span class=\"" + htmlClass.punctuationSpacer + "\"></span>";
+                        }
+
                         return ret;
                     });
                 });
