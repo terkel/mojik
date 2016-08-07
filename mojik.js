@@ -348,9 +348,7 @@
                                 } else {
                                     matchBehind = reBehind.exec(slices[l]);
                                     if (matchBehind) {
-                                        ret += "<span class=\"" + htmlClass.punctuationSpacer +
-                                                "\" data-mjk-punc-pair=\"" + match + matchBehind[1] +
-                                                "\"></span>";
+                                        ret += "<span class=\"" + htmlClass.punctuationSpacer + "\"></span>";
                                     }
                                     break;
                                 }
@@ -358,9 +356,7 @@
                         } else {
                             matchBehind = reBehind.exec(slices[i].slice(offset + 1));
                             if (matchBehind) {
-                                ret += "<span class=\"" + htmlClass.punctuationSpacer +
-                                        "\" data-mjk-punc-pair=\"" + match + matchBehind[1] +
-                                        "\"></span>";
+                                ret += "<span class=\"" + htmlClass.punctuationSpacer + "\"></span>";
                             }
                         }
                         return ret;
