@@ -111,17 +111,17 @@
         var reWestern = new RegExp("[" + Mojik.characters.western + "]+", "g");
         var reWesternAhead = new RegExp("[" + Mojik.characters.western + "]+$");
         var reWesternBehind = new RegExp("^[" + Mojik.characters.western + "]+");
-        var reJaPuncStr =
+        var rePuncStr =
                 Mojik.characters.japaneseOpeningBrackets +
                 Mojik.characters.japaneseClosingBrackets +
                 Mojik.characters.japaneseMiddleDots +
                 Mojik.characters.japaneseFullStops +
                 Mojik.characters.japaneseCommas +
                 Mojik.characters.japaneseFullWidthSpace;
-        var reJaPuncAhead = new RegExp("[" + reJaPuncStr + "]$");
-        var reJaPuncBehind = new RegExp("^[" + reJaPuncStr + "]");
-        var reJaOpeningBracket = new RegExp("[" + Mojik.characters.japaneseOpeningBrackets + "]", "g");
-        var jaPuncPairs = [
+        var rePuncAhead = new RegExp("[" + rePuncStr + "]$");
+        var rePuncBehind = new RegExp("^[" + rePuncStr + "]");
+        var reOpeningBracket = new RegExp("[" + Mojik.characters.japaneseOpeningBrackets + "]", "g");
+        var puncPairs = [
             [Mojik.characters.japaneseClosingBrackets,
                 Mojik.characters.japaneseOpeningBrackets +
                 Mojik.characters.japaneseClosingBrackets +
@@ -161,7 +161,7 @@
             var textSlices = [];
             var openingBracketList;
             var westernList;
-            var observedPuncElements;
+            var observedFragments;
             var ignoreTagMatch;
             var ignoreTagMatchs;
             var reIgnoreEndTag;
@@ -231,10 +231,10 @@
                         // 空白で始まる
                         /^\s/.test(match) ||
                         // スライス中の2文字目以降で和文約物に後続
-                        (offset > 0 && reJaPuncAhead.test(slices[i].slice(0, offset))) ||
+                        (offset > 0 && rePuncAhead.test(slices[i].slice(0, offset))) ||
                         // スライスの先頭で、先行する直近のテキストスライスが和文約物か欧文で終わる
                         (offset === 0 && textSlices.length > 1 && (
-                            reJaPuncAhead.test(textSlices[textSlices.length - 2]) ||
+                            rePuncAhead.test(textSlices[textSlices.length - 2]) ||
                             reWesternAhead.test(textSlices[textSlices.length - 2])
                         ))
                     ) {
@@ -257,7 +257,7 @@
                                     }
                                 } else {
                                     // タグをまたいで後続する直近のテキストスライスが和文約物か欧文で始まる
-                                    if (reJaPuncBehind.test(slices[k]) || reWesternBehind.test(slices[k])) {
+                                    if (rePuncBehind.test(slices[k]) || reWesternBehind.test(slices[k])) {
                                         hasNoSpaceAfter = true;
                                     }
                                     break;
@@ -282,7 +282,7 @@
                         // 空白で終わる
                         /\s$/.test(match) ||
                         // 和文約物が直接後続する
-                        reJaPuncBehind.test(slices[i].slice(matchEndPosition))
+                        rePuncBehind.test(slices[i].slice(matchEndPosition))
                     )) {
                         hasNoSpaceAfter = true;
                     }
@@ -297,7 +297,7 @@
                 });
 
                 // 和文始め括弧を検出
-                tmp = slices[i].replace(reJaOpeningBracket, function (match, offset) {
+                tmp = slices[i].replace(reOpeningBracket, function (match, offset) {
                     var isAtParagraphHead;
                     var isLead;
                     var hasSucceeding;
@@ -332,7 +332,7 @@
                 slices[i] = tmp;
 
                 // 連続する和文約物を検出
-                jaPuncPairs.forEach(function (pair) {
+                puncPairs.forEach(function (pair) {
                     var reAhead = new RegExp("[" + pair[0] + "]", "g");
                     var reBehind = new RegExp("^(?:" + reTagStr + ")*([" + pair[1] + "])");
 
@@ -366,7 +366,7 @@
             el.innerHTML = slices.join("");
 
             // 行頭の欧文と始め括弧類を検出
-            observedPuncElements = el.querySelectorAll(
+            observedFragments = el.querySelectorAll(
                 "." + htmlClass.leadOpeningBracket +
                     ":not(." + htmlClass.leadOpeningBracket_atParagraphHead + ")," +
                 "." + htmlClass.western +
@@ -382,8 +382,8 @@
                 var parentPaddingLeft = parseFloat(window.getComputedStyle(el).paddingLeft);
 
                 // 検出結果をリセット
-                Array.prototype.forEach.call(observedPuncElements, function (punc) {
-                    punc.classList.remove(
+                Array.prototype.forEach.call(observedFragments, function (frag) {
+                    frag.classList.remove(
                         htmlClass.western_atLineHead,
                         htmlClass.western_afterLineBreak,
                         htmlClass.leadOpeningBracket_atLineHead,
@@ -391,8 +391,8 @@
                         htmlClass.fullStopAndComma_hangingEnd
                     );
 
-                    if (punc.classList.contains(htmlClass.leadOpeningBracket)) {
-                        punc.previousSibling.classList.remove(
+                    if (frag.classList.contains(htmlClass.leadOpeningBracket)) {
+                        frag.previousSibling.classList.remove(
                             htmlClass.leadOpeningBracketBefore_atLineEnd
                         );
                     }
@@ -403,41 +403,41 @@
                     el.style.position = "relative";
                 }
 
-                Array.prototype.forEach.call(observedPuncElements, function (punc) {
+                Array.prototype.forEach.call(observedFragments, function (frag) {
                     var marginLeft;
-                    var puncBefore;
+                    var fragBefore;
 
                     // 行頭欧文
-                    if (punc.classList.contains(htmlClass.western)) {
-                        marginLeft = parseFloat(window.getComputedStyle(punc).marginLeft);
+                    if (frag.classList.contains(htmlClass.western)) {
+                        marginLeft = parseFloat(window.getComputedStyle(frag).marginLeft);
 
                         // 直前の要素がbrかどうか
-                        if (isLineBreak(punc.previousSibling)) {
-                            punc.classList.add(
+                        if (isLineBreak(frag.previousSibling)) {
+                            frag.classList.add(
                                 htmlClass.western_atLineHead,
                                 htmlClass.western_afterLineBreak
                             );
                         }
 
                         // 要素内の相対位置を検出
-                        else if (punc.offsetLeft - marginLeft - parentPaddingLeft < 1) {
-                            punc.classList.add(htmlClass.western_atLineHead);
+                        else if (frag.offsetLeft - marginLeft - parentPaddingLeft < 1) {
+                            frag.classList.add(htmlClass.western_atLineHead);
                         }
                     }
 
                     // 行頭始め括弧類
-                    else if (punc.classList.contains(htmlClass.leadOpeningBracket)) {
-                        puncBefore = punc.previousSibling;
+                    else if (frag.classList.contains(htmlClass.leadOpeningBracket)) {
+                        fragBefore = frag.previousSibling;
 
                         // 直前がbrかどうか
-                        if (isLineBreak(puncBefore.previousSibling)) {
-                            punc.classList.add(htmlClass.leadOpeningBracket_atLineHead);
+                        if (isLineBreak(fragBefore.previousSibling)) {
+                            frag.classList.add(htmlClass.leadOpeningBracket_atLineHead);
                         }
 
                         // 要素内の相対位置を検出
-                        else if (punc.offsetLeft - parentPaddingLeft < 1) {
-                            punc.classList.add(htmlClass.leadOpeningBracket_atLineHead);
-                            puncBefore.classList.add(htmlClass.leadOpeningBracketBefore_atLineEnd);
+                        else if (frag.offsetLeft - parentPaddingLeft < 1) {
+                            frag.classList.add(htmlClass.leadOpeningBracket_atLineHead);
+                            fragBefore.classList.add(htmlClass.leadOpeningBracketBefore_atLineEnd);
                         }
                     }
                 });
