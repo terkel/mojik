@@ -24,6 +24,12 @@
         leadOpeningBracket_atParagraphHead: "leadOpeningBracket-atParagraphHead",
         leadOpeningBracketBefore: "leadOpeningBracketBefore",
         leadOpeningBracketBefore_atLineEnd: "leadOpeningBracketBefore-atLineEnd",
+        tailClosingBracket: "tailClosingBracket",
+        tailClosingBracket_atParagraphEnd: "tailClosingBracket-atParagraphEnd",
+        tailFullStop: "tailFullStop",
+        tailFullStop_atParagraphEnd: "tailFullStop-atParagraphEnd",
+        tailComma: "tailComma",
+        tailComma_atParagraphEnd: "tailComma-atParagraphEnd",
         western: "western",
         western_number: "western-number",
         western_noSpaceBefore: "western-noSpaceBefore",
@@ -121,6 +127,15 @@
         var reJaPuncAhead = new RegExp("[" + reJaPuncStr + "]$");
         var reJaPuncBehind = new RegExp("^[" + reJaPuncStr + "]");
         var reJaOpeningBracket = new RegExp("[" + Mojik.characters.japaneseOpeningBrackets + "]", "g");
+        var reJaClosingBracket = new RegExp("[" + Mojik.characters.japaneseClosingBrackets + "]");
+        var reJaFullStop = new RegExp("[" + Mojik.characters.japaneseFullStops + "]");
+        var reJaComma = new RegExp("[" + Mojik.characters.japaneseCommas + "]");
+        var reJaFollowingPuncBehind = new RegExp("^(?:" + reTagStr + ")*[" +
+                Mojik.characters.japaneseDividingPunctuations +
+                Mojik.characters.japaneseMiddleDots +
+                Mojik.characters.japaneseClosingBrackets +
+                Mojik.characters.japaneseFullStops +
+                Mojik.characters.japaneseCommas + "]");
         var jaPuncPairs = [
             [Mojik.characters.japaneseClosingBrackets,
                 Mojik.characters.japaneseOpeningBrackets +
@@ -331,7 +346,7 @@
 
                 slices[i] = tmp;
 
-                // 連続する和文約物を検出
+                // 連続する約物と、終わり括弧類・区切り約物類・中点類・句読点類が後続しない受け約物（終わり括弧類・句読点類）を検出
                 jaPuncPairs.forEach(function (pair) {
                     var reAhead = new RegExp("[" + pair[0] + "]", "g");
                     var reBehind = new RegExp("^(?:" + reTagStr + ")*([" + pair[1] + "])");
@@ -341,6 +356,7 @@
                         var textBehind = "";
                         var l;
 
+                        // 後続するテキストの検出
                         if (offset + match.length === slices[i].length) {
                             for (l = i + 1; l < slices.length; l++) {
                                 if (reTag.test(slices[l])) {
@@ -354,7 +370,30 @@
                             textBehind = slices[i].slice(offset + 1);
                         }
 
-                        if (textBehind && reBehind.test(textBehind)) {
+                        // 後続するテキストが空白文字のみの場合は無視
+                        if (/^\s+$/.test(textBehind)) {
+                            textBehind = "";
+                        }
+
+                        // 終わり括弧類・区切り約物類・中点類・句読点類が後続しない
+                        if (!reJaFollowingPuncBehind.test(textBehind)) {
+                            if (reJaClosingBracket.test(match)) {
+                                ret = "<span class=\"" + htmlClass.tailClosingBracket +
+                                        (textBehind? "": " " + htmlClass.tailClosingBracket_atParagraphEnd) +
+                                        "\">" + match + "</span>";
+                            } else if (reJaFullStop.test(match)) {
+                                ret = "<span class=\"" + htmlClass.tailFullStop +
+                                        (textBehind? "": " " + htmlClass.tailFullStop_atParagraphEnd) +
+                                        "\">" + match + "</span>";
+                            } else if (reJaComma.test(match)) {
+                                ret = "<span class=\"" + htmlClass.tailComma +
+                                        (textBehind? "": " " + htmlClass.tailComma_atParagraphEnd) +
+                                        "\">" + match + "</span>";
+                            }
+                        }
+
+                        // 約物が後続
+                        if (reBehind.test(textBehind)) {
                             ret += "<span class=\"" + htmlClass.punctuationSpacer + "\"></span>";
                         }
 
