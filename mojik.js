@@ -168,7 +168,6 @@
             var reIgnoreStartTag;
             var i;
             var j;
-            var tmp;
 
             // スライスごとに処理
             for (i = 0; i < slices.length; i++) {
@@ -297,7 +296,7 @@
                 });
 
                 // 和文始め括弧を検出
-                tmp = slices[i].replace(reOpeningBracket, function (match, offset) {
+                slices[i] = slices[i].replace(reOpeningBracket, function (match, offset) {
                     var isAtParagraphHead;
                     var isLead;
                     var hasSucceeding;
@@ -328,8 +327,6 @@
                                 "<span class=" + htmlClass.leadOpeningBracket + ">" + match + "</span>";
                     }
                 });
-
-                slices[i] = tmp;
 
                 // 連続する和文約物を検出
                 puncPairs.forEach(function (pair) {
