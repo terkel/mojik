@@ -1,5 +1,5 @@
 /*!
- * Mojik v0.1.4 https://github.com/terkel/mojik
+ * Mojik v0.1.5 https://github.com/terkel/mojik
  * @author Takeru Suzuki http://terkel.jp/
  * @license MIT http://opensource.org/licenses/MIT
  */
@@ -111,17 +111,17 @@
         var reWestern = new RegExp("[" + Mojik.characters.western + "]+", "g");
         var reWesternAhead = new RegExp("[" + Mojik.characters.western + "]+$");
         var reWesternBehind = new RegExp("^[" + Mojik.characters.western + "]+");
-        var reJaPuncStr =
+        var rePuncStr =
                 Mojik.characters.japaneseOpeningBrackets +
                 Mojik.characters.japaneseClosingBrackets +
                 Mojik.characters.japaneseMiddleDots +
                 Mojik.characters.japaneseFullStops +
                 Mojik.characters.japaneseCommas +
                 Mojik.characters.japaneseFullWidthSpace;
-        var reJaPuncAhead = new RegExp("[" + reJaPuncStr + "]$");
-        var reJaPuncBehind = new RegExp("^[" + reJaPuncStr + "]");
-        var reJaOpeningBracket = new RegExp("[" + Mojik.characters.japaneseOpeningBrackets + "]", "g");
-        var jaPuncPairs = [
+        var rePuncAhead = new RegExp("[" + rePuncStr + "]$");
+        var rePuncBehind = new RegExp("^[" + rePuncStr + "]");
+        var reOpeningBracket = new RegExp("[" + Mojik.characters.japaneseOpeningBrackets + "]", "g");
+        var puncPairs = [
             [Mojik.characters.japaneseClosingBrackets,
                 Mojik.characters.japaneseOpeningBrackets +
                 Mojik.characters.japaneseClosingBrackets +
@@ -161,13 +161,13 @@
             var textSlices = [];
             var openingBracketList;
             var westernList;
+            var observedFragments;
             var ignoreTagMatch;
             var ignoreTagMatchs;
             var reIgnoreEndTag;
             var reIgnoreStartTag;
             var i;
             var j;
-            var tmp;
 
             // スライスごとに処理
             for (i = 0; i < slices.length; i++) {
@@ -230,10 +230,10 @@
                         // 空白で始まる
                         /^\s/.test(match) ||
                         // スライス中の2文字目以降で和文約物に後続
-                        (offset > 0 && reJaPuncAhead.test(slices[i].slice(0, offset))) ||
+                        (offset > 0 && rePuncAhead.test(slices[i].slice(0, offset))) ||
                         // スライスの先頭で、先行する直近のテキストスライスが和文約物か欧文で終わる
                         (offset === 0 && textSlices.length > 1 && (
-                            reJaPuncAhead.test(textSlices[textSlices.length - 2]) ||
+                            rePuncAhead.test(textSlices[textSlices.length - 2]) ||
                             reWesternAhead.test(textSlices[textSlices.length - 2])
                         ))
                     ) {
@@ -256,7 +256,7 @@
                                     }
                                 } else {
                                     // タグをまたいで後続する直近のテキストスライスが和文約物か欧文で始まる
-                                    if (reJaPuncBehind.test(slices[k]) || reWesternBehind.test(slices[k])) {
+                                    if (rePuncBehind.test(slices[k]) || reWesternBehind.test(slices[k])) {
                                         hasNoSpaceAfter = true;
                                     }
                                     break;
@@ -281,7 +281,7 @@
                         // 空白で終わる
                         /\s$/.test(match) ||
                         // 和文約物が直接後続する
-                        reJaPuncBehind.test(slices[i].slice(matchEndPosition))
+                        rePuncBehind.test(slices[i].slice(matchEndPosition))
                     )) {
                         hasNoSpaceAfter = true;
                     }
@@ -296,7 +296,7 @@
                 });
 
                 // 和文始め括弧を検出
-                tmp = slices[i].replace(reJaOpeningBracket, function (match, offset) {
+                slices[i] = slices[i].replace(reOpeningBracket, function (match, offset) {
                     var isAtParagraphHead;
                     var isLead;
                     var hasSucceeding;
@@ -328,16 +328,14 @@
                     }
                 });
 
-                slices[i] = tmp;
-
                 // 連続する和文約物を検出
-                jaPuncPairs.forEach(function (pair) {
+                puncPairs.forEach(function (pair) {
                     var reAhead = new RegExp("[" + pair[0] + "]", "g");
                     var reBehind = new RegExp("^(?:" + reTagStr + ")*([" + pair[1] + "])");
 
                     slices[i] = slices[i].replace(reAhead, function (match, offset) {
                         var ret = match;
-                        var matchBehind = null;
+                        var textBehind = "";
                         var l;
 
                         if (offset + match.length === slices[i].length) {
@@ -345,23 +343,18 @@
                                 if (reTag.test(slices[l])) {
                                     continue;
                                 } else {
-                                    matchBehind = reBehind.exec(slices[l]);
-                                    if (matchBehind) {
-                                        ret += "<span class=\"" + htmlClass.punctuationSpacer +
-                                                "\" data-mjk-punc-pair=\"" + match + matchBehind[1] +
-                                                "\"></span>";
-                                    }
+                                    textBehind = slices[l];
                                     break;
                                 }
                             }
                         } else {
-                            matchBehind = reBehind.exec(slices[i].slice(offset + 1));
-                            if (matchBehind) {
-                                ret += "<span class=\"" + htmlClass.punctuationSpacer +
-                                        "\" data-mjk-punc-pair=\"" + match + matchBehind[1] +
-                                        "\"></span>";
-                            }
+                            textBehind = slices[i].slice(offset + 1);
                         }
+
+                        if (textBehind && reBehind.test(textBehind)) {
+                            ret += "<span class=\"" + htmlClass.punctuationSpacer + "\"></span>";
+                        }
+
                         return ret;
                     });
                 });
@@ -369,83 +362,80 @@
 
             el.innerHTML = slices.join("");
 
-            openingBracketList = el.querySelectorAll("." + htmlClass.leadOpeningBracket +
-                    ":not(." + htmlClass.leadOpeningBracket_atParagraphHead + ")");
-            westernList = el.querySelectorAll("." + htmlClass.western +
+            // 行頭の欧文と始め括弧類を検出
+            observedFragments = el.querySelectorAll(
+                "." + htmlClass.leadOpeningBracket +
+                    ":not(." + htmlClass.leadOpeningBracket_atParagraphHead + ")," +
+                "." + htmlClass.western +
                     ":not(." + htmlClass.western_atParagraphHead + ")" +
-                    ":not(." + htmlClass.western_noSpace + ")" +
-                    ":not(." + htmlClass.western_noSpaceBefore + ")");
-            detectOpeningBracketAtLineHead();
-            detectWesternAtLineHead();
+                    ":not(." + htmlClass.western_noSpaceBefore + ")"
+            );
+            parseLines();
             throttle("resize", "optimizedResize");
-            window.addEventListener("optimizedResize", detectOpeningBracketAtLineHead);
-            window.addEventListener("optimizedResize", detectWesternAtLineHead);
+            window.addEventListener("optimizedResize", parseLines);
 
-            // 行頭の欧文を検出
-            function detectWesternAtLineHead () {
+            function parseLines () {
                 var staticParent = window.getComputedStyle(el).position === "static";
                 var parentPaddingLeft = parseFloat(window.getComputedStyle(el).paddingLeft);
 
                 // 検出結果をリセット
-                Array.prototype.forEach.call(westernList, function (western) {
-                    western.classList.remove(htmlClass.western_atLineHead);
-                    western.classList.remove(htmlClass.western_afterLineBreak);
+                Array.prototype.forEach.call(observedFragments, function (frag) {
+                    frag.classList.remove(
+                        htmlClass.western_atLineHead,
+                        htmlClass.western_afterLineBreak,
+                        htmlClass.leadOpeningBracket_atLineHead,
+                        htmlClass.fullStopAndComma_atLineEnd,
+                        htmlClass.fullStopAndComma_hangingEnd
+                    );
+
+                    if (frag.classList.contains(htmlClass.leadOpeningBracket)) {
+                        frag.previousSibling.classList.remove(
+                            htmlClass.leadOpeningBracketBefore_atLineEnd
+                        );
+                    }
                 });
 
-                // 欧文の相対位置を検出するため親要素のpositionプロパティを一時的に変更
+                // 欧文・約物の相対位置を検出するため親要素のpositionプロパティを一時的に変更
                 if (staticParent) {
                     el.style.position = "relative";
                 }
 
-                Array.prototype.forEach.call(westernList, function (western) {
-                    var marginLeft = parseFloat(window.getComputedStyle(western).marginLeft);
+                Array.prototype.forEach.call(observedFragments, function (frag) {
+                    var marginLeft;
+                    var fragBefore;
 
-                    // 直前の要素がbrかどうか
-                    if (isLineBreak(western.previousSibling)) {
-                        western.classList.add(htmlClass.western_atLineHead);
-                        western.classList.add(htmlClass.western_afterLineBreak);
+                    // 行頭欧文
+                    if (frag.classList.contains(htmlClass.western)) {
+                        marginLeft = parseFloat(window.getComputedStyle(frag).marginLeft);
+
+                        // 直前の要素がbrかどうか
+                        if (isLineBreak(frag.previousSibling)) {
+                            frag.classList.add(
+                                htmlClass.western_atLineHead,
+                                htmlClass.western_afterLineBreak
+                            );
+                        }
+
+                        // 要素内の相対位置を検出
+                        else if (frag.offsetLeft - marginLeft - parentPaddingLeft < 1) {
+                            frag.classList.add(htmlClass.western_atLineHead);
+                        }
                     }
 
-                    // 要素内の相対位置を検出
-                    else if (western.offsetLeft - marginLeft - parentPaddingLeft < 1) {
-                        western.classList.add(htmlClass.western_atLineHead);
-                    }
-                });
+                    // 行頭始め括弧類
+                    else if (frag.classList.contains(htmlClass.leadOpeningBracket)) {
+                        fragBefore = frag.previousSibling;
 
-                // 親要素のpositionプロパティを元に戻す
-                if (staticParent) {
-                    el.style.position = "";
-                }
-            }
+                        // 直前がbrかどうか
+                        if (isLineBreak(fragBefore.previousSibling)) {
+                            frag.classList.add(htmlClass.leadOpeningBracket_atLineHead);
+                        }
 
-            // 行頭の始め括弧を検出
-            function detectOpeningBracketAtLineHead () {
-                var staticParent = window.getComputedStyle(el).position === "static";
-                var parentPaddingLeft = parseFloat(window.getComputedStyle(el).paddingLeft);
-
-                // 検出結果をリセット
-                Array.prototype.forEach.call(openingBracketList, function (bracket) {
-                    bracket.classList.remove(htmlClass.leadOpeningBracket_atLineHead);
-                    bracket.previousSibling.classList.remove(htmlClass.leadOpeningBracketBefore_atLineEnd);
-                });
-
-                // 始め括弧の相対位置を検出するため親要素のpositionプロパティを一時的に変更
-                if (staticParent) {
-                    el.style.position = "relative";
-                }
-
-                Array.prototype.forEach.call(openingBracketList, function (bracket) {
-                    var bracketBefore = bracket.previousSibling;
-
-                    // 直前がbrかどうか
-                    if (isLineBreak(bracketBefore.previousSibling)) {
-                        bracket.classList.add(htmlClass.leadOpeningBracket_atLineHead);
-                    }
-
-                    // 要素内の相対位置を検出
-                    else if (bracket.offsetLeft - parentPaddingLeft < 1) {
-                        bracket.classList.add(htmlClass.leadOpeningBracket_atLineHead);
-                        bracketBefore.classList.add(htmlClass.leadOpeningBracketBefore_atLineEnd);
+                        // 要素内の相対位置を検出
+                        else if (frag.offsetLeft - parentPaddingLeft < 1) {
+                            frag.classList.add(htmlClass.leadOpeningBracket_atLineHead);
+                            fragBefore.classList.add(htmlClass.leadOpeningBracketBefore_atLineEnd);
+                        }
                     }
                 });
 
