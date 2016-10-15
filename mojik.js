@@ -142,6 +142,9 @@
                 Mojik.characters.japaneseClosingBrackets +
                 Mojik.characters.japaneseMiddleDots +
                 Mojik.characters.japaneseFullWidthSpace
+            ],
+            [Mojik.characters.japaneseFullWidthSpace,
+                Mojik.characters.japaneseOpeningBrackets
             ]
         ];
         var htmlClass = (function () {
