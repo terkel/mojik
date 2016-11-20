@@ -17,6 +17,10 @@
     var cutsTheMustard =
             "classList" in document.documentElement &&
             "requestAnimationFrame" in window;
+    var isOldAndroid = /Android [1-5]\./.test(navigator.userAgent);
+    var defaults = {
+        supportOldAndroid: false
+    };
 
     Mojik.htmlClassPrefix = "mjk-";
 
@@ -104,9 +108,11 @@
 
     Mojik.ignoreTag = "pre|code|kbd|samp";
 
-    Mojik.compose = function (selector/*, options*/) {
+    Mojik.compose = function (selector, options) {
 
-        if (!cutsTheMustard) {
+        options = extend(defaults, options);
+
+        if (!cutsTheMustard || (isOldAndroid && !options.supportOldAndroid)) {
             return;
         }
 
@@ -478,6 +484,20 @@
         };
         obj.addEventListener(type, func);
     };
+
+    function extend (target, source) {
+        var key;
+        var val;
+        if (source) {
+            for (key in source) {
+                val = source[key];
+                if (typeof val !== "undefined") {
+                    target[key] = val;
+                }
+            }
+        }
+        return target;
+    }
 
     return Mojik;
 }));
