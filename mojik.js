@@ -1,5 +1,5 @@
 /*!
- * Mojik v0.1.5 https://github.com/terkel/mojik
+ * Mojik v0.2.0 https://github.com/terkel/mojik
  * @author Takeru Suzuki http://terkel.jp/
  * @license MIT http://opensource.org/licenses/MIT
  */
@@ -14,6 +14,13 @@
 }(this, function () {
 
     var Mojik = Mojik || {};
+    var cutsTheMustard =
+            "classList" in document.documentElement &&
+            "requestAnimationFrame" in window;
+    var isOldAndroid = /Android [1-5]\./.test(navigator.userAgent);
+    var defaults = {
+        supportOldAndroid: false
+    };
 
     Mojik.htmlClassPrefix = "mjk-";
 
@@ -101,7 +108,14 @@
 
     Mojik.ignoreTag = "pre|code|kbd|samp";
 
-    Mojik.compose = function (selector/*, options*/) {
+    Mojik.compose = function (selector, options) {
+
+        options = extend(defaults, options);
+
+        if (!cutsTheMustard || (isOldAndroid && !options.supportOldAndroid)) {
+            return;
+        }
+
         var elements = document.querySelectorAll(selector);
         var reCommentStr = "<!--[\\s\\S]*?-->";
         var reTagStr = "<\\/?[^>]+?\\/?>";
@@ -142,6 +156,9 @@
                 Mojik.characters.japaneseClosingBrackets +
                 Mojik.characters.japaneseMiddleDots +
                 Mojik.characters.japaneseFullWidthSpace
+            ],
+            [Mojik.characters.japaneseFullWidthSpace,
+                Mojik.characters.japaneseOpeningBrackets
             ]
         ];
         var htmlClass = (function () {
@@ -467,6 +484,20 @@
         };
         obj.addEventListener(type, func);
     };
+
+    function extend (target, source) {
+        var key;
+        var val;
+        if (source) {
+            for (key in source) {
+                val = source[key];
+                if (typeof val !== "undefined") {
+                    target[key] = val;
+                }
+            }
+        }
+        return target;
+    }
 
     return Mojik;
 }));
