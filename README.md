@@ -53,7 +53,7 @@ Set the spacing amount using CSS.
 
     Mojik.compose("main h1", { supportOldAndroid: true });
 
-- `supportOldAndroid`: Noto Sans CJKの入っていない、バージョン5までのAndroidをサポートするかどうか。デフォルトは`false`（参考：https://github.com/terkel/mojik/issues/25）
+- `supportOldAndroid`: Noto Sans CJKの入っていない、バージョン5までのAndroidをサポートするかどうか。デフォルトは`false`（参考：[#25](https://github.com/terkel/mojik/issues/25)）
 
 ## ライセンス License
 
