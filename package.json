@@ -1,6 +1,6 @@
 {
   "name": "mojik",
-  "version": "0.1.5",
+  "version": "0.2.0",
   "description": "Take control of Japanese typesetting on the web",
   "main": "mojik.js",
   "scripts": {
