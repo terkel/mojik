@@ -14,6 +14,9 @@
 }(this, function () {
 
     var Mojik = Mojik || {};
+    var cutsTheMustard =
+            "classList" in document.documentElement &&
+            "requestAnimationFrame" in window;
 
     Mojik.htmlClassPrefix = "mjk-";
 
@@ -102,6 +105,11 @@
     Mojik.ignoreTag = "pre|code|kbd|samp";
 
     Mojik.compose = function (selector/*, options*/) {
+
+        if (!cutsTheMustard) {
+            return;
+        }
+
         var elements = document.querySelectorAll(selector);
         var reCommentStr = "<!--[\\s\\S]*?-->";
         var reTagStr = "<\\/?[^>]+?\\/?>";
