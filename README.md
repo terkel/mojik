@@ -49,10 +49,11 @@ Set the spacing amount using CSS.
 
 ### オプション Options
 
-`Mojik.compose()`でオプションを指定できます。
+`Mojik.compose()`の2番目の引数でオプションを指定できます。
 
     Mojik.compose("main h1", { supportOldAndroid: true });
 
+- `doubleDash`: ダッシュ（U+2014 EM DASHまたはU+2015 HORIZONTAL BAR）が2つ以上連続したとき、それらがつながっているように見せる（実際には1つのダッシュをCSSで横方向に拡大している）。デフォルトは`false`
 - `supportOldAndroid`: Noto Sans CJKの入っていない、バージョン5までのAndroidをサポートするかどうか。デフォルトは`false`（参考：[#25](https://github.com/terkel/mojik/issues/25)）
 
 ## ライセンス License
