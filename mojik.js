@@ -70,6 +70,12 @@
         // 和字間隔
         japaneseFullWidthSpace: "　",
 
+        // ダッシュ
+        dashes: "\\u2014\\u2015", // EM DASH, HRIZONTAL BAR
+
+        // リーダー
+        leaders: "\\u2025\\u2026", // TWO DOT LEADER, HORIZONTAL ELLIPSIS
+
         // 欧文文字
         western:
             "\\u0000-\\u007F" + // Basic Latin
@@ -94,16 +100,7 @@
         westernOpeningBrackets: "‘“\\(\\[\\{<«‹",
 
         // 欧文終わり括弧
-        westernClosingBrackets: "’”)]}>»›",
-
-        // 欧文ダッシュ (FIGURE DASH, EN DASH, EM DASH, HORIZONTAL BAR, SWUNG DASH)
-        westernDashes: "\\u2012\\u2013\\u2014\\u2015\\u2053",
-
-        // 欧文ハイフン (HYPHEN-MINUS, HYPHEN, NON-BREAKING HYPHEN)
-        westernHyphens: "\\u002D\\u2010\\u2011",
-
-        // 欧文リード (HORIZONTAL ELLIPSIS, TWO DOT LEADER)
-        westernEllipses: "\\u2025\\u2026"
+        westernClosingBrackets: "’”)]}>»›"
     };
 
     Mojik.ignoreTag = "pre|code|kbd|samp";
@@ -135,6 +132,8 @@
         var rePuncAhead = new RegExp("[" + rePuncStr + "]$");
         var rePuncBehind = new RegExp("^[" + rePuncStr + "]");
         var reOpeningBracket = new RegExp("[" + Mojik.characters.japaneseOpeningBrackets + "]", "g");
+        var reStartWithDashOrLeader = new RegExp("^([" + Mojik.characters.dashes + Mojik.characters.leaders + "])");
+        var reEndWithDashOrLeader = new RegExp("([" + Mojik.characters.dashes + Mojik.characters.leaders + "])$");
         var puncPairs = [
             [Mojik.characters.japaneseClosingBrackets,
                 Mojik.characters.japaneseOpeningBrackets +
@@ -300,6 +299,16 @@
                         // 和文約物が直接後続する
                         rePuncBehind.test(slices[i].slice(matchEndPosition))
                     )) {
+                        hasNoSpaceAfter = true;
+                    }
+
+                    // ダッシュまたはリーダーで始まる
+                    if (reStartWithDashOrLeader.test(match)) {
+                        hasNoSpaceBefore = true;
+                    }
+
+                    // ダッシュまたはリーダーで終わる
+                    if (reEndWithDashOrLeader.test(match)) {
                         hasNoSpaceAfter = true;
                     }
 
