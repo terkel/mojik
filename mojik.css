@@ -1,5 +1,5 @@
 /*!
- * Mojik v0.2.0 https://github.com/terkel/mojik
+ * Mojik v0.3.0 https://github.com/terkel/mojik
  * @author Takeru Suzuki http://terkel.jp/
  * @license MIT http://opensource.org/licenses/MIT
  */
