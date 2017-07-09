@@ -94,7 +94,7 @@
             // "\\u0400-\\u04FF" + // Cyrillic
             // "\\u0500-\\u052F" + // Cyrillic Supplement
             // ...
-            "\\u2000-\\u206F" + // General Punctuation
+            "\\u2000-\\u203A\\u203C-\\u206F" + // General Punctuation excluding U+203B REFERENCE MARK
             "\\u2070-\\u209F" + // Superscripts and Subscripts
             "\\u20A0-\\u20CF" + // Currency Symbols
             // "\\u20D0-\\u20FF" + // Combining Diacritical Marks for Symbols
