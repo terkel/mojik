@@ -17,6 +17,23 @@
     white-space: pre;
 }
 
+.mjk-dash {
+    display: inline-block;
+    text-align: center;
+}
+
+.mjk-dash-2em {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    transform: scaleX(2);
+}
+
+.mjk-dash-3em {
+    margin-left: 1em;
+    margin-right: 1em;
+    transform: scaleX(3);
+}
+
 .mjk-western {
     margin-left: 0.25ch;
     margin-right: 0.25ch;
@@ -45,4 +62,16 @@
 
 .mjk-western-afterLineBreak::before {
     content: normal;
+}
+
+.mjk-hidden {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+    white-space: nowrap;
 }

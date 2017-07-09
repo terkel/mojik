@@ -19,6 +19,7 @@
             "requestAnimationFrame" in window;
     var isOldAndroid = /Android [1-5]\./.test(navigator.userAgent);
     var defaults = {
+        doubleDash: false,
         supportOldAndroid: false
     };
 
@@ -31,6 +32,9 @@
         leadOpeningBracket_atParagraphHead: "leadOpeningBracket-atParagraphHead",
         leadOpeningBracketBefore: "leadOpeningBracketBefore",
         leadOpeningBracketBefore_atLineEnd: "leadOpeningBracketBefore-atLineEnd",
+        dash: "dash",
+        dash_2em: "dash-2em",
+        dash_3em: "dash-3em",
         western: "western",
         western_number: "western-number",
         western_noSpaceBefore: "western-noSpaceBefore",
@@ -38,7 +42,8 @@
         western_atLineHead: "western-atLineHead",
         western_atParagraphHead: "western-atParagraphHead",
         western_atParagraphEnd: "western-atParagraphEnd",
-        western_afterLineBreak: "western-afterLineBreak"
+        western_afterLineBreak: "western-afterLineBreak",
+        hidden: "hidden"
     };
 
     Mojik.characters = {
@@ -134,6 +139,7 @@
         var reOpeningBracket = new RegExp("[" + Mojik.characters.japaneseOpeningBrackets + "]", "g");
         var reStartWithDashOrLeader = new RegExp("^([" + Mojik.characters.dashes + Mojik.characters.leaders + "])");
         var reEndWithDashOrLeader = new RegExp("([" + Mojik.characters.dashes + Mojik.characters.leaders + "])$");
+        var reConsecutiveDashes = new RegExp("([" + Mojik.characters.dashes + "])\\1+", "g");
         var puncPairs = [
             [Mojik.characters.japaneseClosingBrackets,
                 Mojik.characters.japaneseOpeningBrackets +
@@ -312,6 +318,11 @@
                         hasNoSpaceAfter = true;
                     }
 
+                    // 2倍ダッシュ・3倍ダッシュ
+                    if (options.doubleDash) {
+                        match = match.replace(reConsecutiveDashes, wrapDashes);
+                    }
+
                     return leadingWhitespace + "<span class=\"" + htmlClass.western +
                             (isNumber? " " + htmlClass.western_number: "") +
                             (isAtParagraphHead? " " + htmlClass.western_atParagraphHead: "") +
@@ -477,6 +488,30 @@
                         window.getComputedStyle(node).display !== "none";
             }
         });
+
+        function wrapDashes (dashes) {
+            var dashesLength = dashes.length;
+            var dash = dashes.slice(0, 1);
+            var result = "";
+            var odd = dashesLength % 2 > 0;
+            var len = odd? (dashesLength - 3) / 2: dashesLength / 2;
+            var l;
+            if (dashes.length > 1) {
+                for (l = 0; l < len; l++) {
+                    result += "<span class=\"" + htmlClass.dash + " " + htmlClass.dash_2em + "\">" + dash +
+                            "<span class=\"" + htmlClass.hidden + "\">" + dash + "</span>" +
+                            "</span>";
+                }
+                if (odd) {
+                    result += "<span class=\"" + htmlClass.dash + " " + htmlClass.dash_3em + "\">" + dash +
+                            "<span class=\"" + htmlClass.hidden + "\">" + dash + dash + "</span>" +
+                            "</span>";
+                }
+            } else {
+                result = "<span class=\"" + htmlClass.dash + "\">" + dashes + "</span>";
+            }
+            return result;
+        }
     }
 
     // https://developer.mozilla.org/en-US/docs/Web/Events/resize#requestAnimationFrame_customEvent
