@@ -410,6 +410,7 @@
             parseLines();
             throttle("resize", "optimizedResize");
             window.addEventListener("optimizedResize", parseLines);
+            window.matchMedia("print").addListener(parseLines);
 
             function parseLines () {
                 var staticParent = window.getComputedStyle(el).position === "static";
