@@ -108,7 +108,7 @@
         westernClosingBrackets: "’”)]}>»›"
     };
 
-    Mojik.ignoreTag = "pre|code|kbd|samp";
+    Mojik.ignoreTag = "pre";
 
     Mojik.compose = function (selector, options) {
 
@@ -123,7 +123,7 @@
         var reTagStr = "<\\/?[^>]+?\\/?>";
         var reTag = new RegExp(reTagStr);
         var reTagDivider = new RegExp(reCommentStr + "|" + reTagStr + "|[^<>]+", "gi");
-        var reIgnoreTag = new RegExp("^<(" + Mojik.ignoreTag + ")[ >]", "i");
+        var reIgnoreTag = new RegExp("^<(" + Mojik.ignoreTag + ")[\\s>]", "i");
         var reWestern = new RegExp("[" + Mojik.characters.western + "]+", "g");
         var reWesternAhead = new RegExp("[" + Mojik.characters.western + "]+$");
         var reWesternBehind = new RegExp("^[" + Mojik.characters.western + "]+");
