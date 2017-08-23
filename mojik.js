@@ -170,6 +170,7 @@
         ];
         var htmlClass = (function () {
             var obj = {};
+            var key;
             for (key in Mojik.htmlClass) {
                 obj[key] = Mojik.htmlClassPrefix + Mojik.htmlClass[key];
             }
