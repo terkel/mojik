@@ -110,7 +110,7 @@
         westernClosingBrackets: "’”)]}>»›"
     };
 
-    Mojik.ignoreTag = "pre";
+    Mojik.ignoreTag = "pre|code|kbd|samp";
 
     Mojik.compose = function (selector, options) {
 
