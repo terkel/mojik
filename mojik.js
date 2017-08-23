@@ -178,7 +178,7 @@
         Array.prototype.forEach.call(elements, function (el) {
 
             // 要素内の文字列をテキストとタグのスライス（文字列片）に分割
-            var slices = el.innerHTML.match(reTagDivider);
+            var slices = el.innerHTML.match(reTagDivider) || [];
 
             var textSlices = [];
             var openingBracketList;
