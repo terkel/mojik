@@ -37,6 +37,10 @@ Call the `Mojik.compose()` method. Use the parameter to pass the CSS selector to
     Mojik.compose(".ArticleBody p");
     </script>
 
+文字組を適用したくない箇所は`.mjk-ignore`でマークアップします。
+
+    <p>ありがとう<span class="mjk-ignore">ヾ(๑╹◡╹)ﾉ</span></p>
+
 各アキ量はCSSで調整します。  
 Set the spacing amount using CSS.
 

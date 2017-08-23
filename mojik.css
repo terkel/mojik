@@ -75,3 +75,40 @@
     width: 1px;
     white-space: nowrap;
 }
+
+.mjk-ignore .mjk-punctuationSpacer {
+    margin-right: 0;
+}
+
+.mjk-ignore .mjk-leadOpeningBracket-atParagraphHead,
+.mjk-ignore .mjk-leadOpeningBracket-atLineHead {
+    margin-left: 0;
+}
+
+.mjk-ignore .mjk-western {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.mjk-ignore .mjk-leadOpeningBracketBefore-atLineEnd::before,
+.mjk-ignore .mjk-western-atLineHead::before {
+    content: normal;
+}
+
+.mjk-ignore .mjk-dash {
+    display: inline;
+    text-align: inherit;
+    margin-left: 0;
+    margin-right: 0;
+    transform: none;
+}
+
+.mjk-ignore .mjk-hidden {
+    clip: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    position: static;
+    width: auto;
+    white-space: normal;
+}
