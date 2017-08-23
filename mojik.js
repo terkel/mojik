@@ -23,6 +23,8 @@
         supportOldAndroid: false
     };
 
+    throttle("resize", "optimizedResize");
+
     Mojik.htmlClassPrefix = "mjk-";
 
     Mojik.htmlClass = {
@@ -408,7 +410,6 @@
                     ":not(." + htmlClass.western_noSpaceBefore + ")"
             );
             parseLines();
-            throttle("resize", "optimizedResize");
             window.addEventListener("optimizedResize", parseLines);
             window.matchMedia("print").addListener(parseLines);
 
