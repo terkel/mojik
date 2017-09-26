@@ -20,6 +20,7 @@
     var isOldAndroid = /Android [1-5]\./.test(navigator.userAgent);
     var defaults = {
         doubleDash: false,
+        spaceInsideWesternBrackets: false,
         supportOldAndroid: false
     };
 
@@ -104,10 +105,10 @@
             "\\u2150-\\u218F",  // Number Forms
 
         // 欧文始め括弧
-        westernOpeningBrackets: "‘“\\(\\[\\{<«‹",
+        westernOpeningBrackets: "\\(\\[\\{“",
 
         // 欧文終わり括弧
-        westernClosingBrackets: "’”)]}>»›"
+        westernClosingBrackets: "\\)\\]\\}”"
     };
 
     Mojik.ignoreTag = "pre|code|kbd|samp";
@@ -142,6 +143,8 @@
         var reStartWithDashOrLeader = new RegExp("^([" + Mojik.characters.dashes + Mojik.characters.leaders + "])");
         var reEndWithDashOrLeader = new RegExp("([" + Mojik.characters.dashes + Mojik.characters.leaders + "])$");
         var reConsecutiveDashes = new RegExp("([" + Mojik.characters.dashes + "])\\1+", "g");
+        var reStartWithWesternClosingBracket = new RegExp("^[" + Mojik.characters.westernClosingBrackets + "]");
+        var reEndWithWesternOpeningBracket = new RegExp("[" + Mojik.characters.westernOpeningBrackets + "]$");
         var puncPairs = [
             [Mojik.characters.japaneseClosingBrackets,
                 Mojik.characters.japaneseOpeningBrackets +
@@ -312,12 +315,16 @@
                     }
 
                     // ダッシュまたはリーダーで始まる
-                    if (reStartWithDashOrLeader.test(match)) {
+                    if (reStartWithDashOrLeader.test(match) ||
+                        (!options.spaceInsideWesternBrackets && reStartWithWesternClosingBracket.test(match))
+                    ) {
                         hasNoSpaceBefore = true;
                     }
 
                     // ダッシュまたはリーダーで終わる
-                    if (reEndWithDashOrLeader.test(match)) {
+                    if (reEndWithDashOrLeader.test(match) ||
+                        (!options.spaceInsideWesternBrackets && reEndWithWesternOpeningBracket.test(match))
+                    ) {
                         hasNoSpaceAfter = true;
                     }
 

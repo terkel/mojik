@@ -58,6 +58,7 @@ Set the spacing amount using CSS.
     Mojik.compose("main h1", { supportOldAndroid: true });
 
 - `doubleDash`: ダッシュ（U+2014 EM DASHまたはU+2015 HORIZONTAL BAR）が2つ以上連続したとき、それらがつながっているように見せる（実際には1つのダッシュをCSSで横方向に拡大している）。デフォルトは`false`
+- `spaceInsideWesternBrackets`: 欧文括弧類（`()`、`[]`、`{}`、`“”`）の内側と和文の間にアキを持たせる。デフォルトは`false`
 - `supportOldAndroid`: Noto Sans CJKの入っていない、バージョン5までのAndroidをサポートするかどうか。デフォルトは`false`（参考：[#25](https://github.com/terkel/mojik/issues/25)）
 
 ## ライセンス License
